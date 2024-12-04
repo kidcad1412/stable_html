@@ -7,7 +7,7 @@ app = Flask(__name__,template_folder='.')
 # Stable Diffusion API 配置
 # API_URL = "https://stablediffusionapi.com/api/v3/text2img"
 API_URL = f"https://api.stability.ai/v2beta/stable-image/generate/ultra"
-API_KEY = "sk-bnKrlryvOKqp4OT0JrtYQ8DtuZjYmQQMGXAAB4l4aCvKrmoI"
+API_KEY = "sk-bnKrlryvOKqp4OT0JrtYQ8DtuKrmoI"
 
 # 初始化 Google 翻译
 translator = Translator()
