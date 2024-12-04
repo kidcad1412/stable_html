@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成语生成图像</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px;
+        }
+        #image {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+        #error {
+            color: red;
+            margin-top: 20px;
+        }
+        #text {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>成语生成图像</h1>
+    <p>请输入成语并点击生成：</p>
+    
+    <input type="text" id="idiom" placeholder="例如：画龙点睛" />
+    <button onclick="generateImage()">生成图像</button>
+
+    <div id="error"></div>
+    <h2 id="idiom_display"></h2>
+    <p id="pinyin_display"></p>
+    <p id="english_translation_display"></p>
+
+    <ul id="text"></ul>
+    <img id="image" style="display:none;" />
+
+    <script>
+        function generateImage() {
+            const idiom = document.getElementById('idiom').value;
+            const errorDiv = document.getElementById('error');
+            const imageDiv = document.getElementById('image');
+            const idiomDisplay = document.getElementById('idiom_display');
+            const pinyinDisplay = document.getElementById('pinyin_display');
+            const englishTranslationDisplay = document.getElementById('english_translation_display');
+            const textDiv = document.getElementById('text');
+
+            // 清空之前的内容
+            errorDiv.innerHTML = '';
+            imageDiv.style.display = 'none';
+            idiomDisplay.innerHTML = '';
+            pinyinDisplay.innerHTML = '';
+            englishTranslationDisplay.innerHTML = '';
+            textDiv.innerHTML = '';
+
+            if (!idiom) {
+                errorDiv.innerHTML = '请输入成语！';
+                return;
+            }
+
+            // 使用 Fetch API 向 Flask 后端发送 POST 请求
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    idiom: idiom
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    // 显示成语和拼音
+                    idiomDisplay.innerHTML = `<h1>${data.idiom}</h1>`;
+                    pinyinDisplay.innerHTML = `<p>拼音: ${data.pinyin}</p>`;
+                    englishTranslationDisplay.innerHTML = `<p>英文翻译: ${data.english_translation}</p>`;
+
+                    // 显示生成过程的文本
+                    const textList = document.createElement('ul');
+                    textList.innerHTML = `<li>生成提示：${data.prompt}</li>`;
+                    textDiv.appendChild(textList);
+
+                    // 显示图像
+                    imageDiv.src = data.image_url;
+                    imageDiv.style.display = 'block';  // 显示图片
+                } else {
+                    errorDiv.innerHTML = '图像生成失败，请稍后再试！';
+                }
+            })
+            .catch(error => {
+                errorDiv.innerHTML = '请求失败，请检查网络或稍后再试。';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>

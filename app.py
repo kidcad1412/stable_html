@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import requests
 from googletrans import Translator
 
-app = Flask(__name__)
+app = Flask(__name__,template_folder='.')
 
 # Stable Diffusion API 配置
 # API_URL = "https://stablediffusionapi.com/api/v3/text2img"
